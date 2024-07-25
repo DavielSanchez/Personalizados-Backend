@@ -1,0 +1,27 @@
+{
+    "name": "personalizados-backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "nodemon index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcrypt": "^5.1.1",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "ejs": "^3.1.10",
+        "express": "^4.19.2",
+        "http": "^0.0.1-security",
+        "mongodb": "^6.6.1",
+        "mongoose": "^8.3.4",
+        "mongoose-paginate-v2": "^1.8.1",
+        "nodemon": "^3.1.0",
+        "path": "^0.12.7"
+    }
+}

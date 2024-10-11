@@ -90,10 +90,26 @@ router.get('/products/id/:id', (req, res) => {
         })
 })
 
+/////////////////////////////////
+// GET A PRODUCT BY CATEGORY ///
+router.get('/products/category/:category', (req, res) => {
+    const Category = req.params.category
+    productsSchema
+        .find({
+            'productCategory': `${Category}`
+        })
+        .then((data) => {
+            res.json(data)
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+})
+
 
 ///////////////////////////
 // POST A PRODUCT ////////
-router.post('products/add', (req, res) => {
+router.post('/products/add', (req, res) => {
     const product = productsSchema(req.body)
     product
         .save()
@@ -120,7 +136,8 @@ router.put('/products/put/:id', (req, res) => {
         productStock,
         productOffer,
         productDiscount,
-        productCategory
+        productCategory,
+        productComment
     } = productsSchema(req.body)
     productsSchema
         .updateOne({ _id: id }, {
@@ -135,7 +152,8 @@ router.put('/products/put/:id', (req, res) => {
                 productStock,
                 productOffer,
                 productDiscount,
-                productCategory
+                productCategory,
+                productComment
             }
         })
         .then((data) => {

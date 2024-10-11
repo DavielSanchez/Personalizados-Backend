@@ -71,7 +71,7 @@ router.get('/categories/id/:id', (req, res) => {
 
 ///////////////////////////
 // POST A CATEGORY ////////
-router.post('categories/add', (req, res) => {
+router.post('/categories/add', (req, res) => {
     const category = categoriesSchema(req.body)
     category
         .save()
@@ -80,8 +80,44 @@ router.post('categories/add', (req, res) => {
         })
         .catch((error) => {
             console.error(error)
+                // console.error("error")
         })
 })
+
+/* app.post('/categories/add', (req, res) => {
+    const { categoryName, categoryImageLink, categoryTag, categoryComment } = req.body;
+
+    // Validar que los campos requeridos están presentes
+    if (!categoryName || !categoryImageLink || !categoryTag) {
+        return res.status(400).json({ error: 'Faltan datos obligatorios' });
+    }
+
+    // Aquí es donde normalmente agregarías la lógica para guardar la categoría
+    // en una base de datos o realizar otra acción.
+
+    // Simulamos el guardado de la categoría
+    const newCategory = {
+        categoryName,
+        categoryImageLink,
+        categoryTag,
+        categoryComment,
+    };
+    category
+        .save()
+        .then((data) => {
+            res.json(data)
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+
+    // Responder con éxito y devolver la nueva categoría creada
+    res.status(201).json({
+        message: 'Categoría agregada exitosamente',
+        category: newCategory,
+    });
+}); */
+
 
 ///////////////////////////
 // UPDATE A CATEGORY //////
@@ -90,14 +126,16 @@ router.put('/categories/put/:id', (req, res) => {
     const {
         categoryName,
         categoryTag,
-        categoryImage
+        categoryImage,
+        categoryComment
     } = categoriesSchema(req.body)
     categoriesSchema
         .updateOne({ _id: id }, {
             $set: {
                 categoryName,
                 categoryTag,
-                categoryImage
+                categoryImage,
+                categoryComment
             }
         })
         .then((data) => {

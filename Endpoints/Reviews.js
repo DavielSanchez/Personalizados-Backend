@@ -108,7 +108,7 @@ router.put('/reviews/put/:id', (req, res) => {
 })
 
 /////////////////////////// */
-// DELETE A CAR ///////////
+// DELETE A REVIEW ///////////
 router.delete('/reviews/delete/:id', (req, res) => {
     const id = req.params.id
     reviewsSchema

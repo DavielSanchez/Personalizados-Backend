@@ -8,12 +8,12 @@ const productsSchema = mongoose.Schema({
     productSizes: { type: Array, required: false },
     productSummary: { type: String, required: false },
     productDescription: { type: String, required: false },
-    productMainImage: { type: Array, required: false },
+    productMainImage: { type: String, required: false },
     productImages: { type: Array, required: false },
     productStock: { type: Number, required: false, default: 0 },
     productOffer: { type: Boolean, required: false, default: false },
     productDiscount: { type: Number, required: false, default: 0 },
-    productCategory: { type: Schema.Types.ObjectId, ref: 'Categories' },
+    productCategory: { type: Schema.Types.ObjectId, required: false, ref: 'Categories' },
     // productLikes: { type: Number, required: false, default: 0 },
     productComment: { type: String, required: false }
 })

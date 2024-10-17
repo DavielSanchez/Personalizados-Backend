@@ -8,6 +8,7 @@ const port = 3000
 const Categories = require('./Endpoints/Categories')
 const Products = require('./Endpoints/Products')
 const Reviews = require('./Endpoints/Reviews')
+const Users = require('./Endpoints/User')
 
 ////////////////////
 
@@ -27,6 +28,7 @@ app.use(express.json())
 app.use('/', Categories)
 app.use('/', Products)
 app.use('/', Reviews)
+app.use('/', Users)
 
 ////////////////
 

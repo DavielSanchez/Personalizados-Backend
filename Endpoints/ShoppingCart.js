@@ -1,7 +1,7 @@
 const express = require('express')
 
 // eslint-disable-next-line
-const reviewsSchema = require('./models/Reviews')
+const shoppingCartSchema = require('./models/ShoppingCart')
 const app = express();
 const router = express.Router();
 
@@ -11,17 +11,10 @@ function capitalize(text) {
     return firstLetter.toUpperCase() + rest;
 }
 
-const options = {
-    page: 1,
-    limit: 3,
-    collation: {
-        locale: 'en'
-    },
-}
 
-// GET ALL THE REVIEWS ////
-router.get('/reviews', (req, res) => {
-    reviewsSchema
+// GET ALL THE ShoppingCarts ////
+router.get('/cart', (req, res) => {
+    shoppingCartSchema
         .find()
         .then((data) => {
             res.json(data)
@@ -32,29 +25,24 @@ router.get('/reviews', (req, res) => {
 })
 
 ///////////////////////////
-// GET REVIEW BY PRODUCT ID //
-router.get('/reviews/:productId', (req, res) => {
-    const { limit, page } = req.query
-    const id = req.params.productId
-    reviewsSchema
-        .paginate({
-            productId: id
-        }, {
-            limit: limit,
-            page: page
-        }, (err, docs) => {
-            res.json({
-                docs
-            })
+// GET REVIEW BY CART ID //
+router.get('/cart/:id', (req, res) => {
+    const id = req.params.id
+    shoppingCartSchema
+        .find({ _id: id })
+        .then((data) => {
+            res.json(data)
         })
-
+        .catch((error) => {
+            console.error(error)
+        })
 })
 
 ///////////////////////////
 // POST A REVIEW ////////
-router.post('/reviews/add', (req, res) => {
-    const review = reviewsSchema(req.body)
-    review
+router.post('/cart/add', (req, res) => {
+    const cart = shoppingCartSchema(req.body)
+    cart
         .save()
         .then((data) => {
             res.json(data)
@@ -64,11 +52,11 @@ router.post('/reviews/add', (req, res) => {
         })
 })
 
-/* /////////////////////////// 
+/////////////////////////// */
 // DELETE A REVIEW ///////////
 router.delete('/reviews/delete/:id', (req, res) => {
     const id = req.params.id
-    reviewsSchema
+    shoppingCartSchema
         .deleteOne({ _id: id })
         .then((data) => {
             res.json(data)
@@ -79,6 +67,6 @@ router.delete('/reviews/delete/:id', (req, res) => {
 })
 
 ///////////////////////////
- */
+
 
 module.exports = router;

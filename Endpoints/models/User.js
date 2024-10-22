@@ -8,13 +8,14 @@ const userSchema = mongoose.Schema({
     userName: { type: String, required: false, unique: true },
     userEmail: { type: String, required: false, unique: true },
     userPassword: { type: String, required: false },
-    userAddress: { street: String, city: String, state: String, postalCode: String, country: String },
+    // userAddress: { street: String, city: String, state: String, postalCode: String, country: String },
     phoneNumber: { type: Number, required: false },
     userRegistrationDate: { type: Date, default: Date.now },
     lastLogin: { type: Date, required: false },
     userRole: { type: String, enum: ['cliente', 'administrador'], default: 'cliente' },
-    userAccountStatus: { type: String, enum: ['activo', 'suspendido', 'pendiente'], default: 'pendiente' },
-
+    userAccountStatus: { type: String, enum: ['activo', 'suspendido', 'pendiente'], default: 'activo' },
+    profileImageUrl: { type: String, required: false },
+    firebaseUID: { type: String, required: false }
 });
 
 userSchema.pre('save', function(next) {

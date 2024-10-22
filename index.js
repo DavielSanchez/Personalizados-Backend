@@ -9,8 +9,8 @@ const Categories = require('./Endpoints/Categories')
 const Products = require('./Endpoints/Products')
 const Reviews = require('./Endpoints/Reviews')
 const Users = require('./Endpoints/User')
-
-////////////////////
+const ShoppingCart = require('./Endpoints/ShoppingCart')
+    ////////////////////
 
 // Server run //
 const app = express()
@@ -29,6 +29,7 @@ app.use('/', Categories)
 app.use('/', Products)
 app.use('/', Reviews)
 app.use('/', Users)
+app.use('/', ShoppingCart)
 
 ////////////////
 

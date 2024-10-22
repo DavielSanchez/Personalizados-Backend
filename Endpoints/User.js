@@ -20,6 +20,20 @@ router.get('/users', (req, res) => {
 })
 
 ///////////////////////////
+// GET A USER BY firebaseUID ///
+router.get('/user/uid/:id', (req, res) => {
+    const firebaseUID = req.params.id
+    userSchema
+        .find({ firebaseUID: firebaseUID })
+        .then((data) => {
+            res.json(data)
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+})
+
+///////////////////////////
 // POST A USER ////////
 router.post('/users/add', (req, res) => {
     console.log(req.body); // Para verificar los datos que recibes
@@ -45,29 +59,31 @@ router.put('/users/put/:id', (req, res) => {
         userName,
         userEmail,
         userPassword,
-        userAddress,
-        productImages,
-        productStock,
-        productOffer,
-        productDiscount,
-        productCategory,
-        productComment
+        // userAddress,
+        phoneNumber,
+        userRegistrationDate,
+        lastLogin,
+        userRole,
+        userAccountStatus,
+        profileImageUrl,
+        firebaseUID
     } = userSchema(req.body)
     userSchema
         .updateOne({ _id: id }, {
             $set: {
-                productName,
-                productPrice,
-                productTag,
-                productColors,
-                productSummary,
-                productDescription,
-                productImages,
-                productStock,
-                productOffer,
-                productDiscount,
-                productCategory,
-                productComment
+                userFirstName,
+                userLastName,
+                userName,
+                userEmail,
+                userPassword,
+                // userAddress,
+                phoneNumber,
+                userRegistrationDate,
+                lastLogin,
+                userRole,
+                userAccountStatus,
+                profileImageUrl,
+                firebaseUID
             }
         })
         .then((data) => {

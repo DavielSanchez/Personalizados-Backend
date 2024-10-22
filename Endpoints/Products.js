@@ -16,7 +16,6 @@ router.get('/products', (req, res) => {
     productsSchema
         .find()
         .then((data) => {
-            console.log("Watching")
             res.json(data)
         })
         .catch((error) => {

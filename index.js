@@ -2,7 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const { mongoConnection } = require('./DB')
 const cors = require('cors')
-const port = 3000
+    // const port = 3000
 
 // External routes //
 const Categories = require('./Endpoints/Categories')

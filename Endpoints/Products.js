@@ -95,7 +95,7 @@ router.get('/products/category/:category', (req, res) => {
     const Category = req.params.category
     productsSchema
         .find({
-            'productCategory': `${Category}`
+            'productPrice': `${Category}`
         })
         .then((data) => {
             res.json(data)
@@ -105,6 +105,18 @@ router.get('/products/category/:category', (req, res) => {
         })
 })
 
+/////////////////////////////////
+// GET A PRODUCT BY OFFER ///
+router.get('/products/offer', (req, res) => {
+    productsSchema
+        .find({ "productOffer": false })
+        .then((data) => {
+            res.json(data)
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+})
 
 ///////////////////////////
 // POST A PRODUCT ////////

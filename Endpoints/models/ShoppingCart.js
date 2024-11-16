@@ -9,7 +9,7 @@ const shoppingCartSchema = mongoose.Schema({
         productColor: { type: String, required: false },
         productSize: { type: String, required: false },
         productQuantity: { type: Number, required: false, default: 1 },
-        productPrice: { type: Number, required: true }
+        // productPrice: { type: Number, required: true }
     }]
 });
 

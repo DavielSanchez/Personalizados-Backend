@@ -16,7 +16,6 @@ router.get('/categories', (req, res) => {
     categoriesSchema
         .find()
         .then((data) => {
-            console.log("Watching")
             res.json(data)
         })
         .catch((error) => {

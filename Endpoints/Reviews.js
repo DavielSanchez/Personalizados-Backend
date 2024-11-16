@@ -24,30 +24,12 @@ router.get('/reviews', (req, res) => {
     reviewsSchema
         .find()
         .then((data) => {
-            console.log("Watching")
             res.json(data)
         })
         .catch((error) => {
             console.error(error)
         })
 })
-
-// ///////////////////////////
-// // GET REVIEW BY PRODUCT ID //
-// router.get('/reviews/:productId', (req, res) => {
-//     const id = req.params.productId
-//     reviewsSchema
-//         .find({
-//             productId: id
-//         })
-//         .then((data) => {
-//             console.log("Watching")
-//             res.json(data)
-//         })
-//         .catch((error) => {
-//             console.error(error)
-//         })
-// })
 
 ///////////////////////////
 // GET REVIEW BY PRODUCT ID //
@@ -70,7 +52,7 @@ router.get('/reviews/:productId', (req, res) => {
 
 ///////////////////////////
 // POST A REVIEW ////////
-router.post('reviews/add', (req, res) => {
+router.post('/reviews/add', (req, res) => {
     const review = reviewsSchema(req.body)
     review
         .save()
@@ -82,32 +64,7 @@ router.post('reviews/add', (req, res) => {
         })
 })
 
-///////////////////////////
-/* // UPDATE A CATEGORY //////
-router.put('/reviews/put/:id', (req, res) => {
-    const id = req.params.id
-    const {
-        categoryName,
-        categoryTag,
-        categoryImage
-    } = reviewsSchema(req.body)
-    reviewsSchema
-        .updateOne({ _id: id }, {
-            $set: {
-                categoryName,
-                categoryTag,
-                categoryImage
-            }
-        })
-        .then((data) => {
-            res.json(data)
-        })
-        .catch((error) => {
-            console.error(error)
-        })
-})
-
-/////////////////////////// */
+/* /////////////////////////// 
 // DELETE A REVIEW ///////////
 router.delete('/reviews/delete/:id', (req, res) => {
     const id = req.params.id
@@ -122,6 +79,6 @@ router.delete('/reviews/delete/:id', (req, res) => {
 })
 
 ///////////////////////////
-
+ */
 
 module.exports = router;

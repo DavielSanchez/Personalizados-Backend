@@ -1,5 +1,5 @@
 const { default: mongoose, Schema } = require("mongoose")
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const saltRounds = 10;
 
 const userSchema = mongoose.Schema({
@@ -27,7 +27,7 @@ userSchema.pre('save', function(next) {
             return next(new Error('userPassword is required'));
         }
 
-        bcrypt.hash(document.userPassword, saltRounds, (error, hashedPassword) => {
+        bcrypt.hashSync(document.userPassword, saltRounds, (error, hashedPassword) => {
             if (error) {
                 next(error);
             } else {

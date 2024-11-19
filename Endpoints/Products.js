@@ -95,7 +95,7 @@ router.get('/products/category/:category', (req, res) => {
     const Category = req.params.category
     productsSchema
         .find({
-            'productPrice': `${Category}`
+            'productCategory': `${Category}`
         })
         .then((data) => {
             res.json(data)

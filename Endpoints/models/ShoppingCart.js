@@ -6,10 +6,12 @@ const shoppingCartSchema = mongoose.Schema({
     numberOfProducts: { type: Number, required: false },
     products: [{
         productId: { type: Schema.Types.ObjectId, ref: 'Products' },
+        productName: { type: String, required: false },
         productColor: { type: String, required: false },
+        productImage: { type: String, required: false },
         productSize: { type: String, required: false },
         productQuantity: { type: Number, required: false, default: 1 },
-        // productPrice: { type: Number, required: true }
+        productPrice: { type: Number, required: false }
     }]
 });
 

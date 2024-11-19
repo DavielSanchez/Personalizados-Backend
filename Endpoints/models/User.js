@@ -1,5 +1,6 @@
-const { default: mongoose, Schema } = require("mongoose")
-const bcrypt = require('bcryptjs')
+const { default: mongoose, Schema } = require("mongoose");
+const bcrypt = require('bcryptjs');
+
 const saltRounds = 10;
 
 const userSchema = mongoose.Schema({
@@ -8,7 +9,6 @@ const userSchema = mongoose.Schema({
     userName: { type: String, required: false, unique: true },
     userEmail: { type: String, required: false, unique: true },
     userPassword: { type: String, required: false },
-    // userAddress: { street: String, city: String, state: String, postalCode: String, country: String },
     phoneNumber: { type: Number, required: false },
     userRegistrationDate: { type: Date, default: Date.now },
     lastLogin: { type: Date, required: false },
@@ -18,6 +18,7 @@ const userSchema = mongoose.Schema({
     firebaseUID: { type: String, required: false }
 });
 
+// Middleware para hash de contraseña
 userSchema.pre('save', function(next) {
     if (this.isNew || this.isModified('userPassword')) {
         const document = this;
@@ -27,7 +28,7 @@ userSchema.pre('save', function(next) {
             return next(new Error('userPassword is required'));
         }
 
-        bcrypt.hashSync(document.userPassword, saltRounds, (error, hashedPassword) => {
+        bcrypt.hash(document.userPassword, saltRounds, (error, hashedPassword) => {
             if (error) {
                 next(error);
             } else {
@@ -40,15 +41,15 @@ userSchema.pre('save', function(next) {
     }
 });
 
+// Método para comparar contraseñas
 userSchema.methods.isCorrectPassword = function(userPassword, callback) {
     bcrypt.compare(userPassword, this.userPassword, function(error, same) {
         if (error) {
-            callback(error)
+            callback(error);
         } else {
-            callback(error, same)
+            callback(null, same);
         }
-    })
-}
+    });
+};
 
-
-module.exports = mongoose.model('Users', userSchema, 'Users')
+module.exports = mongoose.model('Users', userSchema, 'Users');

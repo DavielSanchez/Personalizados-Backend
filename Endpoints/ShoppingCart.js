@@ -15,26 +15,26 @@ router.get('/cart', async(req, res) => {
 });
 
 // GET CART BY CART ID
-router.get('/cart/:id', async(req, res) => {
-    const { id } = req.params;
-    try {
-        const cart = await shoppingCartSchema.findById(id);
-        if (!cart) {
-            return res.status(404).json({ message: 'Cart not found' });
-        }
-        res.json(cart);
-    } catch (error) {
-        console.error("Error retrieving cart:", error);
-        res.status(500).json({ message: 'Error retrieving cart', error });
-    }
-});
+router.get('/cart/:userId', (req, res) => {
+    const userId = req.params.userId
+    shoppingCartSchema
+        .find({ userId: userId })
+        .then((data) => {
+            res.json(data)
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+})
 
 // ADD A PRODUCT TO A CART
 router.post('/cart/add', async(req, res) => {
     const {
         userId,
         productId,
+        productName,
         productColor,
+        productImage,
         productSize,
         productQuantity,
         productPrice
@@ -46,7 +46,7 @@ router.post('/cart/add', async(req, res) => {
             // Create a new cart if none exists for the user
             cart = new shoppingCartSchema({
                 userId,
-                products: [{ productId, productColor, productSize, productQuantity, productPrice }]
+                products: [{ productId, productName, productColor, productImage, productSize, productQuantity, productPrice }]
             });
         } else {
             // Check if the product already exists in the cart
@@ -56,7 +56,7 @@ router.post('/cart/add', async(req, res) => {
                 cart.products[existingProductIndex].productQuantity += productQuantity;
             } else {
                 // Add a new product to the cart
-                cart.products.push({ productId, productColor, productSize, productQuantity, productPrice });
+                cart.products.push({ productId, productName, productColor, productImage, productSize, productQuantity, productPrice });
             }
         }
 
@@ -67,6 +67,55 @@ router.post('/cart/add', async(req, res) => {
         res.status(500).json({ message: 'Error adding product to cart', error });
     }
 });
+
+
+// LESS QUANTITY
+router.post('/cart/quantity/moreorless', async (req, res) => {
+    const { userId, productId, productQuantity } = req.body;
+
+    // Validar datos requeridos
+    if (!userId || !productId || productQuantity == null) {
+        return res.status(400).json({ message: 'Faltan datos requeridos' });
+    }
+
+    // Validar que la cantidad sea válida
+    if (productQuantity < 0) {
+        return res.status(400).json({ message: 'La cantidad no puede ser negativa' });
+    }
+
+    try {
+        // Buscar el carrito por usuario
+        let cart = await shoppingCartSchema.findOne({ userId });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Carrito no encontrado para este usuario' });
+        }
+
+        // Buscar el índice del producto en el carrito
+        const existingProductIndex = cart.products.findIndex(p => p.productId.toString() === productId);
+
+        if (existingProductIndex === -1) {
+            return res.status(404).json({ message: 'Producto no encontrado en el carrito' });
+        }
+
+        // Actualizar la cantidad del producto o eliminarlo si llega a 0
+        if (productQuantity === 0) {
+            cart.products.splice(existingProductIndex, 1); // Eliminar producto
+        } else {
+            cart.products[existingProductIndex].productQuantity = productQuantity;
+        }
+
+        // Guardar los cambios en el carrito
+        await cart.save();
+        res.status(200).json({ message: 'Carrito actualizado', cart });
+    } catch (error) {
+        console.error("Error al actualizar el carrito:", error);
+        res.status(500).json({ message: 'Error al actualizar el carrito', error });
+    }
+});
+
+
+
 
 // UPDATE A CART BY CART ID
 router.put('/cart/put/:id', async(req, res) => {
@@ -85,6 +134,36 @@ router.put('/cart/put/:id', async(req, res) => {
     } catch (error) {
         console.error("Error updating cart:", error);
         res.status(500).json({ message: 'Error updating cart', error });
+    }
+});
+
+// DELETE A PRODUCT FROM CART
+router.delete('/cart/remove-product', async (req, res) => {
+    const { userId, productId } = req.body;
+
+    if (!userId || !productId) {
+        return res.status(400).json({ error: 'User ID and Product ID are required.' });
+    }
+    try {
+        const cart = await shoppingCartSchema.findOne({ userId: userId });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found.' });
+        }
+        const productIndex = cart.products.findIndex(product => product._id.toString() === productId);
+
+        if (productIndex === -1) {
+            return res.status(404).json({ message: 'Product not found in cart.' });
+        }
+        cart.products.splice(productIndex, 1);
+        cart.numberOfProducts = cart.products.reduce((total, product) => total + product.productQuantity, 0);
+        cart.totalPrice = cart.products.reduce((total, product) => total + product.productPrice * product.productQuantity, 0);
+        await cart.save();
+
+        res.json(cart);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while removing the product from the cart.' });
     }
 });
 

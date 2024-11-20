@@ -1,22 +1,17 @@
-# fly.toml app configuration file generated for personalizados-backend-aged-silence-9093 on 2024-11-19T21:24:50-04:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
-app = 'personalizados-backend-aged-silence-9093'
-primary_region = 'mia'
+app = "personalizados-backend"
+primary_region = "mia"
 
 [build]
-  dockerfile = './DockerFile'
+dockerfile = "./DockerFile"
 
 [[services]]
-  protocol = 'tcp'
-  internal_port = 3000
+internal_port = 3_000
+protocol = "tcp"
 
   [[services.ports]]
-    port = 80
+  port = 3001
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
-  cpus = 1
+cpu_kind = "shared"
+cpus = 1
+memory = "1gb"

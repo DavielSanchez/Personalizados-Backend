@@ -61,12 +61,12 @@ router.put('/users/put/:id', (req, res) => {
         userPassword,
         // userAddress,
         phoneNumber,
-        userRegistrationDate,
-        lastLogin,
+        // userRegistrationDate,
+        // lastLogin,
         userRole,
-        userAccountStatus,
+        // userAccountStatus,
         profileImageUrl,
-        firebaseUID
+        // firebaseUID
     } = userSchema(req.body)
     userSchema
         .updateOne({ _id: id }, {
@@ -78,12 +78,33 @@ router.put('/users/put/:id', (req, res) => {
                 userPassword,
                 // userAddress,
                 phoneNumber,
-                userRegistrationDate,
-                lastLogin,
+                // userRegistrationDate,
+                // lastLogin,
                 userRole,
-                userAccountStatus,
+                // userAccountStatus,
                 profileImageUrl,
-                firebaseUID
+                // firebaseUID
+            }
+        })
+        .then((data) => {
+            res.json(data)
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+})
+
+/////////////////////////////////////////////////////
+// UPDATE THE PASSWORD OF AN USER WITH THE UID //////
+router.put('/users/put/password/:id', (req, res) => {
+    const id = req.params.id
+    const {
+        userPassword
+    } = userSchema(req.body)
+    userSchema
+        .updateOne({ firebaseUID: id }, {
+            $set: {
+                userPassword
             }
         })
         .then((data) => {

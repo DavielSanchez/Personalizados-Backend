@@ -107,9 +107,10 @@ router.get('/products/category/:category', (req, res) => {
 
 /////////////////////////////////
 // GET A PRODUCT BY OFFER ///
-router.get('/products/offer', (req, res) => {
+router.get('/products/offer/:bool', (req, res) => {
+    const offer = req.params.bool
     productsSchema
-        .find({ "productOffer": false })
+        .find({ "productOffer": offer })
         .then((data) => {
             res.json(data)
         })

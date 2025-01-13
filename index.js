@@ -10,6 +10,7 @@ const Products = require('./Endpoints/Products')
 const Reviews = require('./Endpoints/Reviews')
 const Users = require('./Endpoints/User')
 const ShoppingCart = require('./Endpoints/ShoppingCart')
+const NewsLetter = require('./Endpoints/NewsLetter')
     ////////////////////
 
 // Server run //
@@ -30,6 +31,7 @@ app.use('/', Products)
 app.use('/', Reviews)
 app.use('/', Users)
 app.use('/', ShoppingCart)
+app.use('/', NewsLetter)
 
 ////////////////
 

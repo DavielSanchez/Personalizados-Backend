@@ -2,6 +2,8 @@ const express = require('express')
 
 // eslint-disable-next-line
 const productsSchema = require('./models/Products')
+const categorySchema = require('./models/Categories')
+
 const app = express();
 const router = express.Router();
 
@@ -12,32 +14,108 @@ function capitalize(text) {
 }
 
 // GET ALL THE PRODUCTS //
-router.get('/products', (req, res) => {
-    productsSchema
-        .find()
-        .then((data) => {
-            res.json(data)
-        })
-        .catch((error) => {
-            console.error(error)
-        })
-})
+router.get('/products', async(req, res) => {
+    const { limit, page, priceRange } = req.query
+    let priceFilter = {};
+
+    if (priceRange) {
+        const [minPrice, maxPrice] = priceRange.split('-').map(Number);
+
+        if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+            priceFilter = {
+                productPrice: { $gte: minPrice, $lte: maxPrice }
+            };
+        } else {
+            return res.status(400).json({ message: "Invalid price range format" });
+        }
+    }
+
+    try {
+
+        const products = await productsSchema.paginate({
+            $and: [priceFilter]
+        }, {
+            limit: limit,
+            page: page
+        });
+
+        res.json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error en la búsqueda" });
+    }
+});
+// productsSchema
+//     .find()
+//     .then((data) => {
+//         res.json(data)
+//     })
+//     .catch((error) => {
+//         console.error(error)
+//     })
+// })
 
 ///////////////////////////
+// // GET PRODUCT BY NAME //
+// router.get('/products/:productName', (req, res) => {
+//     const PARAMS = capitalize(req.params.productName)
+//     productsSchema
+//         .find({
+//             productName: { $regex: PARAMS, $options: "i" }
+//         })
+//         .then((data) => {
+//             res.json(data)
+//         })
+//         .catch((error) => {
+//             console.error(error)
+//         })
+// })
+
+// GET PRODUCT BY ANY FIELD //
 // GET PRODUCT BY NAME //
-router.get('/products/:productName', (req, res) => {
-    const PARAMS = capitalize(req.params.productName)
-    productsSchema
-        .find({
-            'productName': PARAMS
-        })
-        .then((data) => {
-            res.json(data)
-        })
-        .catch((error) => {
-            console.error(error)
-        })
-})
+router.get('/products/:query', async(req, res) => {
+    const PARAMS = capitalize(req.params.query);
+    const priceRange = req.query.priceRange;
+
+    let priceFilter = {};
+
+    if (priceRange) {
+        const [minPrice, maxPrice] = priceRange.split('-').map(Number);
+
+        if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+            priceFilter = {
+                productPrice: { $gte: minPrice, $lte: maxPrice }
+            };
+        } else {
+            return res.status(400).json({ message: "Invalid price range format" });
+        }
+    }
+
+    try {
+        const categories = await categorySchema.find({
+            categoryName: { $regex: PARAMS, $options: "i" }
+        });
+
+
+        const products = await productsSchema.find({
+            $and: [{
+                    $or: [
+                        { productName: { $regex: PARAMS, $options: "i" } },
+                        { productTag: { $regex: PARAMS, $options: "i" } },
+                        { productSummary: { $regex: PARAMS, $options: "i" } }
+                    ]
+                },
+                priceFilter
+            ]
+        });
+
+        res.json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error en la búsqueda" });
+    }
+});
+
 
 ///////////////////////////
 // GET PRODUCT BY PRICE //

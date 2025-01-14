@@ -45,34 +45,8 @@ router.get('/products', async(req, res) => {
         res.status(500).json({ message: "Error en la búsqueda" });
     }
 });
-// productsSchema
-//     .find()
-//     .then((data) => {
-//         res.json(data)
-//     })
-//     .catch((error) => {
-//         console.error(error)
-//     })
-// })
-
-///////////////////////////
-// // GET PRODUCT BY NAME //
-// router.get('/products/:productName', (req, res) => {
-//     const PARAMS = capitalize(req.params.productName)
-//     productsSchema
-//         .find({
-//             productName: { $regex: PARAMS, $options: "i" }
-//         })
-//         .then((data) => {
-//             res.json(data)
-//         })
-//         .catch((error) => {
-//             console.error(error)
-//         })
-// })
 
 // GET PRODUCT BY ANY FIELD //
-// GET PRODUCT BY NAME //
 router.get('/products/:query', async(req, res) => {
     const PARAMS = capitalize(req.params.query);
     const priceRange = req.query.priceRange;

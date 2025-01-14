@@ -1,6 +1,21 @@
 const express = require('express');
 const shoppingCartSchema = require('./models/ShoppingCart');
 const router = express.Router();
+const ensureCartExists = async(req, res, next) => {
+    const { userId } = req.body;
+    if (!userId) {
+        return res.status(400).json({ message: "User ID es obligatorio." });
+    }
+
+    let cart = await shoppingCartSchema.findOne({ userId });
+    if (!cart) {
+        cart = new shoppingCartSchema({ userId, products: [] });
+        await cart.save();
+    }
+
+    req.cart = cart;
+    next();
+};
 
 
 // GET ALL CARTS
@@ -27,50 +42,66 @@ router.get('/cart/:userId', (req, res) => {
         })
 })
 
-// ADD A PRODUCT TO A CART
-router.post('/cart/add', async(req, res) => {
-    const {
-        userId,
-        productId,
-        productName,
-        productColor,
-        productImage,
-        productSize,
-        productQuantity,
-        productPrice
-    } = req.body;
-    try {
-        let cart = await shoppingCartSchema.findOne({ userId });
+router.post('/cart/add', ensureCartExists, async(req, res) => {
+    const { productId, productName, productColor, productImage, productSize, productQuantity, productPrice } = req.body;
+    const cart = req.cart;
 
-        if (!cart) {
-            // Create a new cart if none exists for the user
-            cart = new shoppingCartSchema({
-                userId,
-                products: [{ productId, productName, productColor, productImage, productSize, productQuantity, productPrice }]
-            });
-        } else {
-            // Check if the product already exists in the cart
-            const existingProductIndex = cart.products.findIndex(p => p.productId.toString() === productId);
-            if (existingProductIndex >= 0) {
-                // Update quantity if product exists
-                cart.products[existingProductIndex].productQuantity += productQuantity;
-            } else {
-                // Add a new product to the cart
-                cart.products.push({ productId, productName, productColor, productImage, productSize, productQuantity, productPrice });
-            }
-        }
-
-        await cart.save();
-        res.json(cart);
-    } catch (error) {
-        console.error("Error adding product to cart:", error);
-        res.status(500).json({ message: 'Error adding product to cart', error });
+    const existingProductIndex = cart.products.findIndex(p => p.productId.toString() === productId);
+    if (existingProductIndex >= 0) {
+        cart.products[existingProductIndex].productQuantity += productQuantity;
+    } else {
+        cart.products.push({ productId, productName, productColor, productImage, productSize, productQuantity, productPrice });
     }
+
+    await cart.save();
+    res.json(cart);
 });
 
 
+// // ADD A PRODUCT TO A CART
+// router.post('/cart/add', async(req, res) => {
+//     const {
+//         userId,
+//         productId,
+//         productName,
+//         productColor,
+//         productImage,
+//         productSize,
+//         productQuantity,
+//         productPrice
+//     } = req.body;
+//     try {
+//         let cart = await shoppingCartSchema.findOne({ userId });
+
+//         if (!cart) {
+//             // Create a new cart if none exists for the user
+//             cart = new shoppingCartSchema({
+//                 userId,
+//                 products: [{ productId, productName, productColor, productImage, productSize, productQuantity, productPrice }]
+//             });
+//         } else {
+//             // Check if the product already exists in the cart
+//             const existingProductIndex = cart.products.findIndex(p => p.productId.toString() === productId);
+//             if (existingProductIndex >= 0) {
+//                 // Update quantity if product exists
+//                 cart.products[existingProductIndex].productQuantity += productQuantity;
+//             } else {
+//                 // Add a new product to the cart
+//                 cart.products.push({ productId, productName, productColor, productImage, productSize, productQuantity, productPrice });
+//             }
+//         }
+
+//         await cart.save();
+//         res.json(cart);
+//     } catch (error) {
+//         console.error("Error adding product to cart:", error);
+//         res.status(500).json({ message: 'Error adding product to cart', error });
+//     }
+// });
+
+
 // LESS QUANTITY
-router.post('/cart/quantity/moreorless', async (req, res) => {
+router.post('/cart/quantity/moreorless', async(req, res) => {
     const { userId, productId, productQuantity } = req.body;
 
     // Validar datos requeridos
@@ -138,7 +169,7 @@ router.put('/cart/put/:id', async(req, res) => {
 });
 
 // DELETE A PRODUCT FROM CART
-router.delete('/cart/remove-product', async (req, res) => {
+router.delete('/cart/remove-product', async(req, res) => {
     const { userId, productId } = req.body;
 
     if (!userId || !productId) {

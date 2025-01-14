@@ -24,7 +24,11 @@ mongoConnection(process.env.MONGODB_URI);
 
 
 // MIDDLEWARES //
-app.use(cors())
+app.use(cors({
+    origin: ['http://localhost:3000', 'https://blanchedalmond-kingfisher-785257.hostingersite.com'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 app.use(express.json())
 app.use('/', Categories)
 app.use('/', Products)

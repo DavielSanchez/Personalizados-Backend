@@ -8,9 +8,12 @@ const app = express();
 const router = express.Router();
 
 function capitalize(text) {
-    const firstLetter = text.charAt(0);
-    const rest = text.slice(1);
-    return firstLetter.toUpperCase() + rest;
+    if (!text || typeof text !== 'string') {
+        return ''; // Devuelve una cadena vacía si el texto es inválido
+    }
+    const firstLetter = text.charAt(0).toUpperCase();
+    const restOfText = text.slice(1).toLowerCase();
+    return firstLetter + restOfText;
 }
 
 // GET ALL THE PRODUCTS //
@@ -142,20 +145,99 @@ router.get('/products/id/:id', (req, res) => {
 })
 
 /////////////////////////////////
+// GET ALL THE PRODUCT BY CATEGORY ///
+router.get('/products/category/:category', async(req, res) => {
+    const category = req.params.category; // Nombre de la categoría
+    const { limit = 10, page = 1, priceRange, search = '' } = req.query; // Parámetros de consulta
+    let priceFilter = {};
+
+    // Validar rango de precios
+    if (priceRange) {
+        const [minPrice, maxPrice] = priceRange.split('-').map(Number);
+        if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+            priceFilter = {
+                productPrice: { $gte: minPrice, $lte: maxPrice }
+            };
+        } else {
+            return res.status(400).json({ message: "Formato de rango de precios no válido" });
+        }
+    }
+
+    try {
+        // Buscar productos que coincidan con la categoría y otros filtros
+        const products = await productsSchema.find({
+                $and: [
+                    { productCategory: category }, // Filtro por categoría
+                    {
+                        $or: [ // Búsqueda por nombre, etiqueta o resumen
+                            { productName: { $regex: search, $options: "i" } },
+                            { productTag: { $regex: search, $options: "i" } },
+                            { productSummary: { $regex: search, $options: "i" } }
+                        ]
+                    },
+                    priceFilter // Filtro por rango de precios
+                ]
+            })
+            .skip((page - 1) * limit) // Paginación
+            .limit(Number(limit)); // Límite de productos por página
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al buscar productos", error });
+    }
+});
+
+/////////////////////////////////
 // GET A PRODUCT BY CATEGORY ///
-router.get('/products/category/:category', (req, res) => {
-    const Category = req.params.category
-    productsSchema
-        .find({
-            'productCategory': `${Category}`
-        })
-        .then((data) => {
-            res.json(data)
-        })
-        .catch((error) => {
-            console.error(error)
-        })
-})
+router.get('/products/category/:category/:query', async(req, res) => {
+    const PARAMS = capitalize(req.params.query);
+    const category = req.params.category;
+    const priceRange = req.query.priceRange;
+    const limit = parseInt(req.query.limit) || 10; // Límite de productos por página (valor por defecto 10)
+    const page = parseInt(req.query.page) || 1; // Página actual (valor por defecto 1)
+
+    let priceFilter = {};
+
+    if (priceRange) {
+        const [minPrice, maxPrice] = priceRange.split('-').map(Number);
+
+        if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+            priceFilter = {
+                productPrice: { $gte: minPrice, $lte: maxPrice }
+            };
+        } else {
+            return res.status(400).json({ message: "Invalid price range format" });
+        }
+    }
+
+    try {
+        const categories = await categorySchema.find({
+            productCategory: category
+        });
+
+        const products = await productsSchema.find({
+                $and: [
+                    { productName: { $regex: PARAMS, $options: "i" } },
+                    {
+                        $or: [
+                            { productName: { $regex: PARAMS, $options: "i" } },
+                            { productTag: { $regex: PARAMS, $options: "i" } },
+                            { productSummary: { $regex: PARAMS, $options: "i" } }
+                        ]
+                    },
+                    priceFilter
+                ]
+            })
+            .skip((page - 1) * limit)
+            .limit(limit);
+
+        res.json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error en la búsqueda" });
+    }
+});
 
 /////////////////////////////////
 // GET A PRODUCT BY OFFER ///

@@ -16,7 +16,11 @@ const productsSchema = mongoose.Schema({
     productDiscount: { type: Number, required: false, default: 0 },
     productCategory: { type: Schema.Types.ObjectId, required: false, ref: 'Categories' },
     // productLikes: { type: Number, required: false, default: 0 },
-    productComment: { type: String, required: false }
+    productComment: { type: String, required: false },
+    isPriceDisabled: {
+        type: Boolean,
+        default: false
+    }
 })
 
 productsSchema.plugin(mongoosePaginate)

@@ -25,7 +25,7 @@ mongoConnection(process.env.MONGODB_URI);
 
 // MIDDLEWARES //
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://blanchedalmond-kingfisher-785257.hostingersite.com', 'http://localhost:3002', 'https://grey-heron-584852.hostingersite.com'],
+    origin: ['http://localhost:3000', 'https://blanchedalmond-kingfisher-785257.hostingersite.com', 'http://localhost:3002', 'https://grey-heron-584852.hostingersite.com', 'https://personalizadosrd.davielsanchez.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));

@@ -1,6 +1,7 @@
 const { default: mongoose, Schema } = require("mongoose");
 
 const shoppingCartSchema = mongoose.Schema({
+    // userId: { type: String, ref: 'Users' },
     userId: { type: Schema.Types.ObjectId, ref: 'Users' },
     totalPrice: { type: Number, required: false },
     numberOfProducts: { type: Number, required: false },

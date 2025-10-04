@@ -1,6 +1,21 @@
 const express = require('express');
 const shoppingCartSchema = require('./models/ShoppingCart');
 const router = express.Router();
+const ensureCartExists = async(req, res, next) => {
+    const { userId } = req.body;
+    if (!userId) {
+        return res.status(400).json({ message: "User ID es obligatorio." });
+    }
+
+    let cart = await shoppingCartSchema.findOne({ userId });
+    if (!cart) {
+        cart = new shoppingCartSchema({ userId, products: [] });
+        await cart.save();
+    }
+
+    req.cart = cart;
+    next();
+};
 
 
 // GET ALL CARTS
@@ -26,6 +41,23 @@ router.get('/cart/:userId', (req, res) => {
             console.error(error)
         })
 })
+
+// router.post('/cart/add', ensureCartExists, async(req, res) => {
+//     const { productId, productName, productColor, productImage, productSize, productQuantity, productPrice } = req.body;
+//     const cart = req.cart;
+//     console.log(req.body)
+
+//     const existingProductIndex = cart.products.findIndex(p => p.productId.toString() === productId);
+//     if (existingProductIndex >= 0) {
+//         cart.products[existingProductIndex].productQuantity += productQuantity;
+//     } else {
+//         cart.products.push({ productId, productName, productColor, productImage, productSize, productQuantity, productPrice });
+//     }
+
+//     await cart.save();
+//     res.json(cart);
+// });
+
 
 // ADD A PRODUCT TO A CART
 router.post('/cart/add', async(req, res) => {
@@ -70,7 +102,7 @@ router.post('/cart/add', async(req, res) => {
 
 
 // LESS QUANTITY
-router.post('/cart/quantity/moreorless', async (req, res) => {
+router.post('/cart/quantity/moreorless', async(req, res) => {
     const { userId, productId, productQuantity } = req.body;
 
     // Validar datos requeridos
@@ -138,7 +170,7 @@ router.put('/cart/put/:id', async(req, res) => {
 });
 
 // DELETE A PRODUCT FROM CART
-router.delete('/cart/remove-product', async (req, res) => {
+router.delete('/cart/remove-product', async(req, res) => {
     const { userId, productId } = req.body;
 
     if (!userId || !productId) {

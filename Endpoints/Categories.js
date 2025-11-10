@@ -1,7 +1,7 @@
 const express = require('express')
 
 // eslint-disable-next-line
-const categoriesSchema = require('./models/Categories')
+const categoriesSchema = require('../models/Categories')
 const app = express();
 const router = express.Router();
 

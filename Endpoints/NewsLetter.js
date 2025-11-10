@@ -1,7 +1,7 @@
 const express = require('express')
 
 // eslint-disable-next-line
-const NewsLetterSchema = require('./models/NewsLetter')
+const NewsLetterSchema = require('../models/NewsLetter')
 const app = express();
 const router = express.Router();
 

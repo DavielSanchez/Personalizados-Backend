@@ -1,5 +1,5 @@
 const express = require('express');
-const shoppingCartSchema = require('./models/ShoppingCart');
+const shoppingCartSchema = require('../models/ShoppingCart');
 const router = express.Router();
 const ensureCartExists = async(req, res, next) => {
     const { userId } = req.body;

@@ -3,7 +3,7 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 
 // eslint-disable-next-line
-const userSchema = require('./models/User')
+const userSchema = require('../models/User')
 const app = express();
 const router = express.Router();
 

@@ -6,7 +6,8 @@ const cors = require('cors')
 
 // External routes //
 const Categories = require('./Endpoints/Categories')
-const Products = require('./Endpoints/Products')
+const ProductsAdmin = require('./routes/admin/products')
+const ProductsStore = require('./routes/store/products')
 const Reviews = require('./Endpoints/Reviews')
 const Users = require('./Endpoints/User')
 const ShoppingCart = require('./Endpoints/ShoppingCart')
@@ -37,14 +38,17 @@ app.use(cors({
         'https://blanchedalmond-kingfisher-785257.hostingersite.com',
         'https://grey-heron-584852.hostingersite.com',
         'https://personalizadoscms.davielsanchez.com',
-        'https://personalizadosrd.davielsanchez.com'
+        'https://personalizadosrd.davielsanchez.com',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
 app.use(express.json());
 app.use('/', Categories);
-app.use('/', Products);
+
+app.use('/admin/products/', ProductsAdmin);
+app.use('/store/products/', ProductsStore);
+
 app.use('/', Reviews);
 app.use('/', Users);
 app.use('/', ShoppingCart);
